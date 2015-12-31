@@ -159,11 +159,19 @@ var get_vm_size = function () {
   }
 }
 
+var get_address_space = function () {
+  if (process.env['AZ_ADDRESS_SPACE']) {
+    return '--address-space=' + process.env['AZ_ADDRESS_SPACE'];
+  } else {
+    return '--address-space=172.16.0.0';
+  }
+}
+
 exports.queue_default_network = function () {
   task_queue.push([
     'network', 'vnet', 'create',
     get_location(),
-    '--address-space=172.16.0.0',
+    get_address_space(),
     conf.resources['vnet'],
   ]);
 }
@@ -232,8 +240,8 @@ exports.create_config = function (name, nodes) {
     nodes: nodes,
     weave_salt: util.rand_string(),
     resources: {
-      vnet: [name, 'internal-vnet', util.rand_suffix].join('-'),
-      service: [name, util.rand_suffix].join('-'),
+      vnet: [name, 'internal-vnet', util.get_suffix()].join('-'),
+      service: [name, util.get_suffix()].join('-'),
       ssh_key: create_ssh_key(name),
     }
   };

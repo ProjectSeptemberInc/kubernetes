@@ -2,8 +2,9 @@
 
 var azure = require('./lib/azure_wrapper.js');
 var kube = require('./lib/deployment_logic/kubernetes.js');
+var service_name = process.env['AZ_SERVICE_NAME'] || 'kube';
 
-azure.create_config('kube', { 'etcd': 3, 'kube': 3 });
+azure.create_config(service_name, { 'etcd': 3, 'kube': 3 });
 
 azure.run_task_queue([
   azure.queue_default_network(),

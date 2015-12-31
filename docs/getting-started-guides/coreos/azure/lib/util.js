@@ -12,9 +12,10 @@ exports.ipv4 = function (ocets, prefix) {
 };
 
 exports.hostname = function hostname (n, prefix) {
-  return _.template("<%= pre %>-<%= seq %>")({
+  return _.template("<%= pre %>-<%= seq %>-<%= suf %>")({
     pre: prefix || 'core',
     seq: _.pad(n, 2, '0'),
+    suf: exports.get_suffix(),
   });
 };
 
@@ -28,6 +29,15 @@ exports.rand_string = function () {
 
 exports.rand_suffix = exports.rand_string().substring(50);
 
+exports.get_suffix = function() {
+  if (process.env['AZ_SUFFIX']) {
+    return process.env['AZ_SUFFIX'];
+  } else {
+    return exports.rand_suffix;
+  }
+}
+
 exports.join_output_file_path = function(prefix, suffix) {
-  return './output/' + [prefix, exports.rand_suffix, suffix].join('_');
+  output_dir = process.env['AZ_OUTPUT_DIR'] || './output';
+  return output_dir + '/' + [prefix, exports.get_suffix(), suffix].join('_');
 };
