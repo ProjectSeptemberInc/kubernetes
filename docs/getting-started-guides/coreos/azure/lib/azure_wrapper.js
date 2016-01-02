@@ -167,11 +167,20 @@ var get_address_space = function () {
   }
 }
 
+var get_cidr = function () {
+  if (process.env['AZ_CIDR']) {
+    return '--cidr=' + process.env['AZ_CIDR'];
+  } else {
+    return '--cidr=8';
+  }
+}
+
 exports.queue_default_network = function () {
   task_queue.push([
     'network', 'vnet', 'create',
     get_location(),
     get_address_space(),
+    get_cidr(),
     conf.resources['vnet'],
   ]);
 }
