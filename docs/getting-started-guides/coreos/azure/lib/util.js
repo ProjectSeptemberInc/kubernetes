@@ -12,10 +12,9 @@ exports.ipv4 = function (ocets, prefix) {
 };
 
 exports.hostname = function hostname (n, prefix) {
-  return _.template("<%= pre %>-<%= seq %>-<%= suf %>")({
+  return _.template("<%= pre %>-<%= seq %>")({
     pre: prefix || 'core',
     seq: _.pad(n, 2, '0'),
-    suf: exports.get_suffix(),
   });
 };
 
