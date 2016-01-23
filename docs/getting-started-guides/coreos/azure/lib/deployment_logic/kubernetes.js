@@ -47,7 +47,7 @@ exports.create_etcd_cloud_config = function (node_count, conf) {
   var input_file = './cloud_config_templates/kubernetes-cluster-etcd-node-template.yml';
   var output_file = util.join_output_file_path('kubernetes-cluster-etcd-nodes', 'generated.yml');
 
-  return cloud_config.process_template(input_file, output_file, function(data) {
+  return cloud_config.process_template(input_file, output_file, {}, function(data) {
     data.coreos.units.push(etcd_initial_cluster_conf_self(conf));
     return data;
   });
@@ -69,7 +69,10 @@ exports.create_node_cloud_config = function (node_count, conf) {
   };
 
   var write_files_extra = cloud_config.write_files_from('addons', '/etc/kubernetes/addons');
-  return cloud_config.process_template(input_file, output_file, function(data) {
+  var template_vars = {
+    KUBE_MASTER: util.hostname(0, 'kube')
+  };
+  return cloud_config.process_template(input_file, output_file, template_vars, function(data) {
     data.write_files = data.write_files.concat(_(node_count).times(make_node_config), write_files_extra);
     data.coreos.units.push(etcd_initial_cluster_conf_kube(conf));
     return data;

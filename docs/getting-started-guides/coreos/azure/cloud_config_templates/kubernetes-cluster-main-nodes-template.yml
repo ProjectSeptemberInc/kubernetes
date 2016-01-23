@@ -48,7 +48,7 @@ coreos:
         RefuseManualStart=no
         After=weave-network.target
         Requires=weave-network.target
-        ConditionHost=kube-00
+        ConditionHost=<%= KUBE_MASTER %>
         Wants=kube-apiserver.service
         Wants=kube-scheduler.service
         Wants=kube-controller-manager.service
@@ -66,7 +66,7 @@ coreos:
         RefuseManualStart=no
         After=weave-network.target
         Requires=weave-network.target
-        ConditionHost=!kube-00
+        ConditionHost=!<%= KUBE_MASTER %>
         Wants=kube-proxy.service
         Wants=kubelet.service
         [Install]
@@ -212,7 +212,7 @@ coreos:
         Description=Kubernetes API Server
         Documentation=http://kubernetes.io/
         Wants=install-kubernetes.service
-        ConditionHost=kube-00
+        ConditionHost=<%= KUBE_MASTER %>
         [Service]
         ExecStart=/opt/kubernetes/server/bin/kube-apiserver \
             --insecure-bind-address=0.0.0.0 \
@@ -237,7 +237,7 @@ coreos:
         Description=Kubernetes Scheduler
         Documentation=http://kubernetes.io/
         Wants=kube-apiserver.service
-        ConditionHost=kube-00
+        ConditionHost=<%= KUBE_MASTER %>
         [Service]
         ExecStart=/opt/kubernetes/server/bin/kube-scheduler \
             --logtostderr=true \
@@ -258,7 +258,7 @@ coreos:
         Documentation=http://kubernetes.io/
         Wants=kube-apiserver.service
         Wants=install-kubernetes.service
-        ConditionHost=kube-00
+        ConditionHost=<%= KUBE_MASTER %>
         [Service]
         ExecStart=/opt/kubernetes/server/bin/kube-controller-manager \
             --master=127.0.0.1:8080 \
@@ -277,7 +277,7 @@ coreos:
         Description=Kubernetes Kubelet
         Documentation=http://kubernetes.io/
         Wants=install-kubernetes.service
-        ConditionHost=!kube-00
+        ConditionHost=!<%= KUBE_MASTER %>
         [Service]
         ExecStartPre=/bin/mkdir -p /etc/kubernetes/manifests/
         ExecStart=/opt/kubernetes/server/bin/kubelet \
@@ -285,7 +285,7 @@ coreos:
             --address=0.0.0.0 \
             --port=10250 \
             --hostname-override=%H \
-            --api-servers=http://kube-00:8080 \
+            --api-servers=http://<%= KUBE_MASTER %>:8080 \
             --logtostderr=true \
             --cluster-dns=10.16.0.3 \
             --cluster-domain=kube.local \
@@ -306,7 +306,7 @@ coreos:
         Wants=install-kubernetes.service
         [Service]
         ExecStart=/opt/kubernetes/server/bin/kube-proxy \
-             --master=http://kube-00:8080 \
+             --master=http://<%= KUBE_MASTER %>:8080 \
              --logtostderr=true
         Restart=always
         RestartSec=10
@@ -321,7 +321,7 @@ coreos:
         After=install-kubernetes.service
         ConditionFileIsExecutable=/opt/kubernetes/server/bin/kubectl
         ConditionPathIsDirectory=/etc/kubernetes/addons/
-        ConditionHost=kube-00
+        ConditionHost=<%= KUBE_MASTER %>
         Description=Kubernetes Addons
         Documentation=http://kubernetes.io/
         Wants=install-kubernetes.service

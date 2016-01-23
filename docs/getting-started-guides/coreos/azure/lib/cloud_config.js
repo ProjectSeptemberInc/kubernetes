@@ -31,10 +31,11 @@ exports.generate_environment_file_entry_from_object = function (hostname, enviro
   };
 };
 
-exports.process_template = function (input_file, output_file, processor) {
+exports.process_template = function (input_file, output_file, template_vars, processor) {
   var data = {};
   try {
-    data = yaml.safeLoad(fs.readFileSync(input_file, 'utf8'));
+    var raw = fs.readFileSync(input_file, 'utf8');
+    data = yaml.safeLoad(_.template(raw)(template_vars));
   } catch (e) {
     console.log(colors.red(e));
   }
